@@ -3,15 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VR Demo canyon bowl</title>
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="data:," />
+    <title>Crater · Giant games</title>
   </head>
   <body>
-    <div id="seed-panel">
-      <label for="seed-input">Seed</label>
-      <input id="seed-input" type="number" />
-      <button id="rebuild-same-seed" type="button">Rebuild same seed</button>
-      <button id="new-seed" type="button">New seed</button>
-    </div>
+    <header id="environment-panel" class="review-controls">
+      <div class="environment-title"><span class="title-mark" aria-hidden="true">◈</span><div><h1>CRATER</h1><p>Above the void. Into the arena.</p></div></div>
+      <form id="seed-form">
+        <label for="seed-input">WORLD SEED</label>
+        <div class="seed-fields"><input id="seed-input" type="number" min="0" max="4294967295" step="1" required aria-label="World seed" /><button id="rebuild-same-seed" type="submit" title="Rebuild this exact world">Rebuild same seed</button><button id="new-seed" type="button">New seed ↗</button></div>
+      </form>
+    </header>
+    <section id="game-panel" class="review-controls" aria-label="Game selection and play">
+      <div class="game-eyebrow">THE ARENA <span>LOCAL · 2 PLAYERS</span><button id="collapse-game-panel" type="button" aria-label="Minimize game menu" aria-expanded="true">−</button></div>
+      <div class="game-tabs" role="group" aria-label="Choose a game"><button id="choose-connect-four" data-game="connectFour" aria-pressed="true">Connect Four</button><button id="choose-checkers" data-game="checkers" aria-pressed="false">Checkers</button></div>
+      <div class="turn-heading"><span id="player-marker" aria-hidden="true"></span><h2 id="game-turn">Blue to play</h2><span id="move-count">Turn 1</span></div>
+      <p id="game-message" role="status" aria-live="polite"></p>
+      <button id="game-travel" type="button">↓ Descend to play</button>
+      <details id="move-controls"><summary>Button controls</summary><div id="board-controls" aria-label="Board move controls"></div></details>
+      <div class="game-settings"><button id="restart-game" type="button">Restart game</button><label><input id="reduce-game-motion" type="checkbox" /> Reduced motion</label></div>
+      <p class="game-help" id="game-help">Four in a row wins. Click a column on the giant board.</p>
+      <p class="session-note">Share this screen or headset. Pass control after each turn. Switching games keeps your position until refresh.</p>
+    </section>
+    <nav id="view-panel" class="review-controls" aria-label="Environment viewpoints">
+      <div class="view-heading"><label for="view-select">EXPLORE THE CRATER</label><span>Drag to orbit · Scroll to move closer</span></div>
+      <div class="view-buttons"><button data-view="blueStand" class="blue-view" type="button">01 <span>Blue cliff</span></button><button data-view="yellowStand" class="yellow-view" type="button">02 <span>Yellow cliff</span></button><button data-view="wide" type="button">03 <span>Wide view</span></button><button data-view="overhead" type="button">04 <span>Overhead</span></button></div>
+      <button id="travel-button" type="button">↓ Descend 25 m to play terrace</button>
+      <p class="travel-hint">In VR, aim at the square pad and press the trigger.</p>
+      <div class="view-options"><select id="view-select" aria-label="All review cameras"><option value="blueStand">Blue cliff · 32 m above court</option><option value="yellowStand">Yellow cliff · 32 m above court</option><option value="bluePlay">Blue play terrace · lower</option><option value="yellowPlay">Yellow play terrace · lower</option><option value="wide">Cliff terraces · wide</option><option value="sideProfile">Side profile</option><option value="orbit">High orbit</option><option value="overhead">Overhead · plan</option><option value="overheadTilt">Overhead · tilted</option><option value="courtTowardYellow">Court → yellow</option><option value="courtTowardBlue">Court → blue</option></select><button id="motion-toggle" type="button">Pause mist</button></div>
+    </nav>
+    <footer class="review-controls"><output id="scene-stats" aria-label="Rendering statistics"></output><span>Crater games / 002</span></footer>
+    <button id="hide-controls" type="button">Hide controls · H</button>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

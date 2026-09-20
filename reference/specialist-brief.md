@@ -1,5 +1,13 @@
 # Prompt for the 3D environment specialist
 
+**Current amendment:** Read the first section of `crater-environment.md` before
+using this historical brief. The user has since requested upper cliff arrivals,
+a much deeper court and lower play terraces connected by descent pads. That
+request supersedes the two-ledge-only restriction below. A further request now
+adds Connect Four, checkers and game menus on the central field. The current
+amendments also supersede historical no-games/no-HUD restrictions and the center
+post. See `docs/gameplay-physics-ux.md` and `reference/game-review/`.
+
 Open `reference/crater-environment.md` and the stills gallery first. Copy everything below the line into the specialist model.
 
 ---

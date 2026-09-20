@@ -1,154 +1,104 @@
 import { describe, expect, it } from "vitest";
-import { generateCanyonBowl } from "./generateCanyonBowl";
+import { craterBaseHeightBlocks, generateCanyonBowl, getTravelPadCenter } from "./generateCanyonBowl";
 
-describe("generateCanyonBowl", () => {
-  it("builds the same blocks and court when the seed is reused", () => {
-    const firstBowl = generateCanyonBowl(101);
-    const secondBowl = generateCanyonBowl(101);
-
-    expect(secondBowl.blocks).toEqual(firstBowl.blocks);
-    expect(secondBowl.court).toEqual(firstBowl.court);
-    expect(secondBowl.playerOneStandX).toBe(firstBowl.playerOneStandX);
-    expect(secondBowl.playerOneStandZ).toBe(firstBowl.playerOneStandZ);
+describe("seeded crater", () => {
+  it("rebuilds identical terrain, court and platform anchors", () => {
+    expect(generateCanyonBowl(101)).toEqual(generateCanyonBowl(101));
   });
-
-  it("changes terrain when the seed changes", () => {
-    const firstBowl = generateCanyonBowl(101);
-    const secondBowl = generateCanyonBowl(202);
-
-    expect(secondBowl.blocks).not.toEqual(firstBowl.blocks);
+  it("varies the geography while preserving the platform layout", () => {
+    const first = generateCanyonBowl(101), second = generateCanyonBowl(202);
+    expect(first.blocks).not.toEqual(second.blocks);
+    expect(first.platforms).toEqual(second.platforms);
+    expect(first.court).toEqual(second.court);
   });
+});
 
-  it("keeps the blue home side mostly blue and the yellow side mostly yellow", () => {
-    const bowl = generateCanyonBowl(101);
-    const homeBlocks = bowl.blocks.filter(
-      (block) => block.gridZ <= bowl.playerOneStandZ + 2,
-    );
-    const awayBlocks = bowl.blocks.filter(
-      (block) => block.gridZ >= bowl.playerTwoStandZ - 2,
-    );
-    const homeBlueCount = homeBlocks.filter(
-      (block) => block.colorName === "blue",
-    ).length;
-    const awayYellowCount = awayBlocks.filter(
-      (block) => block.colorName === "yellow",
-    ).length;
+describe.each([0, 1, 101, 202, 356533, 4294967295])("crater layout, seed %i", seed => {
+  const bowl = generateCanyonBowl(seed);
+  const heights = new Map<string, number>();
+  for (const block of bowl.blocks) heights.set(`${block.gridX},${block.gridZ}`, Math.max(heights.get(`${block.gridX},${block.gridZ}`) ?? -Infinity, block.gridY));
 
-    expect(homeBlueCount).toBeGreaterThan(homeBlocks.length / 2);
-    expect(awayYellowCount).toBeGreaterThan(awayBlocks.length / 2);
-  });
-
-  it("places a white court below both standing platforms", () => {
-    const bowl = generateCanyonBowl(101);
-
-    expect(bowl.court.colorName).toBe("white");
-    expect(bowl.court.centerY).toBeLessThan(bowl.playerOneStandY);
-    expect(bowl.court.centerZ).toBeGreaterThan(bowl.playerOneStandZ);
-    expect(bowl.court.centerZ).toBeLessThan(bowl.playerTwoStandZ);
-  });
-
-  it("places red accent blocks between the two platforms", () => {
-    const bowl = generateCanyonBowl(101);
-    const redBlocksBetweenSides = bowl.blocks.filter(
-      (block) =>
-        block.colorName === "red" &&
-        block.gridZ > bowl.playerOneStandZ &&
-        block.gridZ < bowl.playerTwoStandZ,
-    );
-
-    expect(redBlocksBetweenSides.length).toBeGreaterThan(0);
-  });
-
-  it("keeps the circular pit empty of terrain blocks", () => {
-    const bowl = generateCanyonBowl(101);
-    const blocksInThePit = bowl.blocks.filter(
-      (block) => Math.hypot(block.gridX, block.gridZ) < 7,
-    );
-
-    expect(blocksInThePit).toEqual([]);
-  });
-
-  it("places inner-slope blocks on the diagonals so the pit is circular", () => {
-    const bowl = generateCanyonBowl(101);
-    const diagonalInnerSlopeBlocks = bowl.blocks.filter((block) => {
-      const radiusFromCenter = Math.hypot(block.gridX, block.gridZ);
-      const isNearDiagonal =
-        Math.abs(Math.abs(block.gridX) - Math.abs(block.gridZ)) <= 2;
-      return (
-        radiusFromCenter >= 10 && radiusFromCenter <= 14 && isNearDiagonal
-      );
-    });
-
-    expect(diagonalInnerSlopeBlocks.length).toBeGreaterThan(20);
-  });
-
-  it("closes the rim with tall stacks on the east and west sides", () => {
-    const bowl = generateCanyonBowl(101);
-    const eastRimHeights = bowl.blocks
-      .filter((block) => block.gridX >= 14 && Math.abs(block.gridZ) <= 4)
-      .map((block) => block.gridY);
-    const westRimHeights = bowl.blocks
-      .filter((block) => block.gridX <= -14 && Math.abs(block.gridZ) <= 4)
-      .map((block) => block.gridY);
-
-    expect(Math.max(...eastRimHeights)).toBeGreaterThanOrEqual(6);
-    expect(Math.max(...westRimHeights)).toBeGreaterThanOrEqual(6);
-  });
-
-  it("keeps each player ledge small relative to the mountain", () => {
-    const bowl = generateCanyonBowl(101);
-    const standHeightBlocks = Math.round(bowl.playerOneStandY);
-    const columnMaxHeightByCell = new Map<string, number>();
-
-    for (const block of bowl.blocks) {
-      if (
-        Math.abs(block.gridX - bowl.playerOneStandX) > 4 ||
-        Math.abs(block.gridZ - bowl.playerOneStandZ) > 3
-      ) {
-        continue;
-      }
-      const columnKey = `${block.gridX},${block.gridZ}`;
-      const currentMaxHeight = columnMaxHeightByCell.get(columnKey) ?? 0;
-      columnMaxHeightByCell.set(
-        columnKey,
-        Math.max(currentMaxHeight, block.gridY),
-      );
+  function assertClearSightline(start: number[], target: number[]) {
+    for (let step = 1; step < 300; step++) {
+      const fraction = step / 300;
+      const x = start[0]! + (target[0]! - start[0]!) * fraction;
+      const y = start[1]! + (target[1]! - start[1]!) * fraction;
+      const z = start[2]! + (target[2]! - start[2]!) * fraction;
+      expect(heights.get(`${Math.round(x)},${Math.round(z)}`) ?? -Infinity).toBeLessThan(y);
     }
+  }
 
-    const terraceColumnCount = [...columnMaxHeightByCell.values()].filter(
-      (maxHeightBlocks) => maxHeightBlocks === standHeightBlocks,
-    ).length;
-
-    expect(terraceColumnCount).toBeGreaterThan(0);
-    expect(terraceColumnCount).toBeLessThan(40);
+  it("keeps the rim closed through all 360 degrees", () => {
+    for (let degrees = 0; degrees < 360; degrees++) {
+      const angle = degrees * Math.PI / 180;
+      expect(heights.get(`${Math.round(Math.cos(angle) * 24)},${Math.round(Math.sin(angle) * 24)}`)).toBeGreaterThanOrEqual(10);
+    }
   });
 
-  it("raises mountains behind each stand above the stand height", () => {
-    const bowl = generateCanyonBowl(101);
-    const maxHeightBehindBlue = Math.max(
-      ...bowl.blocks
-        .filter((block) => block.gridZ <= bowl.playerOneStandZ - 2)
-        .map((block) => block.gridY),
-    );
-    const maxHeightBehindYellow = Math.max(
-      ...bowl.blocks
-        .filter((block) => block.gridZ >= bowl.playerTwoStandZ + 2)
-        .map((block) => block.gridY),
-    );
-
-    expect(maxHeightBehindBlue).toBeGreaterThan(bowl.playerOneStandY + 3);
-    expect(maxHeightBehindYellow).toBeGreaterThan(bowl.playerTwoStandY + 3);
+  it("places exactly two arrival terraces and two lower play terraces above the court", () => {
+    expect(bowl.platforms).toHaveLength(4);
+    for (const color of ["blue", "yellow"]) {
+      const arrival = bowl.platforms.find(p => p.colorName === color && p.level === "arrival")!;
+      const play = bowl.platforms.find(p => p.colorName === color && p.level === "play")!;
+      expect(arrival.surfaceY - bowl.court.centerY).toBe(32);
+      expect(arrival.surfaceY - play.surfaceY).toBe(25);
+      expect(play.surfaceY - bowl.court.centerY).toBe(7);
+      expect(Math.abs(play.centerZ)).toBeLessThan(Math.abs(arrival.centerZ));
+    }
+    expect(bowl.playerOneStandZ).toBe(-bowl.playerTwoStandZ);
+    expect(bowl.playerOnePlayStandZ).toBe(-bowl.playerTwoPlayStandZ);
   });
 
-  it("places both stands on opposite sides of the court at matching distance", () => {
-    const bowl = generateCanyonBowl(101);
+  it("keeps the opposite terrace and court visible from each standing position", () => {
+    for (const platform of bowl.platforms) {
+      const arrivalOffset = platform.level === "arrival" ? Math.sign(platform.centerZ) * 0.8 : 0;
+      const start = [platform.centerX, platform.surfaceY + 1.6, platform.centerZ - arrivalOffset];
+      const opposite = bowl.platforms.find(p => p.level === platform.level && p.colorName !== platform.colorName)!;
+      for (const x of [-2, 0, 2]) {
+        assertClearSightline(start, [x, opposite.surfaceY + 0.06, opposite.centerZ - Math.sign(opposite.centerZ) * 1.51]);
+      }
+      assertClearSightline(start, [0, bowl.court.centerY + 0.1, 0]);
+    }
+  });
 
-    expect(bowl.playerOneStandX).toBeCloseTo(0);
-    expect(bowl.playerTwoStandX).toBeCloseTo(0);
-    expect(bowl.playerOneStandZ).toBeLessThan(bowl.court.centerZ);
-    expect(bowl.playerTwoStandZ).toBeGreaterThan(bowl.court.centerZ);
-    expect(Math.abs(bowl.playerOneStandZ + bowl.playerTwoStandZ)).toBeLessThan(
-      1,
-    );
+  it("builds solid supported terraces with clear headroom and rear cliffs", () => {
+    const cells = new Set(bowl.blocks.map(block => `${block.gridX},${block.gridY},${block.gridZ}`));
+    for (const platform of bowl.platforms) {
+      for (let x = -2; x <= 2; x++) {
+        for (let depth = -1; depth <= 1; depth++) {
+          expect(heights.get(`${x},${platform.centerZ + depth}`)).toBe(platform.surfaceY);
+          for (let y = craterBaseHeightBlocks + 1; y <= platform.surfaceY; y++) expect(cells.has(`${x},${y},${platform.centerZ + depth}`)).toBe(true);
+        }
+        expect(heights.get(`${x},${platform.centerZ + Math.sign(platform.centerZ) * 2}`)).toBeGreaterThanOrEqual(platform.surfaceY + 6);
+      }
+      const [x, y, z] = getTravelPadCenter(platform);
+      expect(Math.abs(x - platform.centerX) + 0.7).toBeLessThan(platform.widthInBlocks / 2);
+      expect(Math.abs(z - platform.centerZ) + 0.7).toBeLessThan(platform.depthInBlocks / 2);
+      expect(y).toBeGreaterThan(platform.surfaceY);
+    }
+  });
+
+  it("keeps red sparse and only on inner slopes, using the four-color palette", () => {
+    const redBlocks = bowl.blocks.filter(block => block.colorName === "red");
+    expect(redBlocks.length).toBeGreaterThan(0);
+    expect(redBlocks.length / bowl.blocks.length).toBeLessThan(0.08);
+    for (const block of redBlocks) {
+      expect(Math.hypot(block.gridX, block.gridZ)).toBeLessThan(20);
+      expect(block.gridY).toBeLessThanOrEqual(6);
+    }
+    expect(new Set(bowl.blocks.map(block => block.colorName))).toEqual(new Set(["blue", "yellow", "red"]));
+    for (const [sign, color] of [[-1, "blue"], [1, "yellow"]] as const) {
+      const poleBlocks = bowl.blocks.filter(block => block.gridZ * sign > 20);
+      expect(poleBlocks.every(block => block.colorName === color)).toBe(true);
+    }
+  });
+
+  it("has extreme irregular summits and an empty circular pit around the white court", () => {
+    for (const sign of [-1, 1]) {
+      expect(Math.max(...bowl.blocks.filter(block => block.gridZ * sign >= 25).map(block => block.gridY))).toBeGreaterThanOrEqual(36);
+    }
+    expect(Math.max(...heights.values()) - Math.min(...heights.values())).toBeGreaterThan(40);
+    for (const block of bowl.blocks) expect(Math.hypot(block.gridX, block.gridZ)).toBeGreaterThanOrEqual(12);
+    expect(bowl.court).toMatchObject({ centerX: 0, centerZ: 0, colorName: "white" });
   });
 });

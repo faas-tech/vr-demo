@@ -1,47 +1,114 @@
-html,
-body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-  color: #e8e8e8;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #fff; background: #000; }
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+canvas { display: block; touch-action: none; }
+button, input, select { font: inherit; }
+button, select { cursor: pointer; }
+button { color: #a3a3a3; background: transparent; border: 1px solid #303030; padding: 9px 12px; border-radius: 3px; font-size: 11px; }
+button:hover { color: #fff; background: #ffffff0d; border-color: #666; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+#environment-panel { position: fixed; inset: 28px 32px auto; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; pointer-events: none; gap: 24px; }
+.environment-title { display: flex; gap: 13px; align-items: center; text-shadow: 0 2px 15px #000; }
+.title-mark { font-size: 31px; font-weight: 200; }
+h1 { font-size: 15px; letter-spacing: 0.32em; font-weight: 500; margin: 0 0 6px; }
+p { font-size: 10px; letter-spacing: 0.05em; color: #999; margin: 0; }
+#seed-form { pointer-events: auto; padding: 12px; background: #050505c9; border: 1px solid #ffffff18; border-radius: 5px; }
+label { font-size: 9px; color: #aaa; letter-spacing: 0.14em; }
+.seed-fields { display: flex; gap: 7px; margin-top: 8px; }
+#seed-input { width: 78px; color: #fff; background: #101010; border: 1px solid #303030; border-radius: 3px; padding: 5px 9px; font-size: 12px; }
+#view-panel { position: fixed; left: 32px; bottom: 64px; z-index: 2; background: #050505d9; border: 1px solid #ffffff20; border-radius: 6px; width: 470px; padding: 16px; }
+.view-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.view-heading span { font-size: 9px; color: #888; }
+.view-buttons { display: flex; gap: 5px; }
+.view-buttons button { flex: 1; padding: 11px 7px; font-size: 9px; color: #888; white-space: nowrap; }
+.view-buttons button span { margin-left: 4px; color: #bbb; }
+.view-buttons button[aria-pressed="true"] { border-color: #fff; color: #fff; background: #ffffff09; }
+.view-buttons .blue-view[aria-pressed="true"] { border-color: #1e6cff; }
+.view-buttons .yellow-view[aria-pressed="true"] { border-color: #ffe14a; }
+.blue-view::before, .yellow-view::before { content: ""; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: #1e6cff; margin-right: 5px; }
+.yellow-view::before { background: #ffe14a; }
+.view-options { display: flex; justify-content: space-between; margin-top: 10px; gap: 8px; }
+select { border: 0; color: #aaa; background: #080808; font-size: 11px; padding: 6px 0; max-width: 65%; }
+#motion-toggle { border: 0; padding: 5px 0; font-size: 10px; }
+footer { position: fixed; inset: auto 32px 24px; display: flex; justify-content: space-between; color: #707070; z-index: 2; font-size: 10px; letter-spacing: 0.02em; pointer-events: none; }
+#hide-controls { position: fixed; right: 32px; bottom: 65px; z-index: 3; background: #000b; font-size: 10px; }
+.vr-button { font-size: 10px !important; border-color: #444 !important; border-radius: 3px !important; bottom: 19px !important; padding: 8px !important; }
+.controls-hidden .review-controls, .controls-hidden .vr-button, .in-vr .review-controls, .in-vr #hide-controls { display: none !important; }
+.controls-hidden #hide-controls { opacity: 0.65; }
+.controls-hidden #hide-controls:hover, .controls-hidden #hide-controls:focus-visible { opacity: 1; }
+@media (max-width: 650px) {
+  #environment-panel { inset: 16px 16px auto; }
+  .environment-title p { display: none; }
+  .environment-title { gap: 6px; }
+  .title-mark { font-size: 23px; }
+  h1 { font-size: 11px; }
+  #seed-form { padding: 8px; }
+  .seed-fields { flex-wrap: wrap; max-width: 200px; gap: 4px; }
+  #seed-input { width: 62px; }
+  .seed-fields button { font-size: 9px; padding: 6px; }
+  #view-panel { left: 16px; bottom: 72px; width: calc(100% - 32px); max-width: 470px; padding: 12px; }
+  .view-heading span { display: none; }
+  footer { inset: auto 16px 14px; font-size: 8px; }
+  footer span { display: none; }
+  #hide-controls { right: 16px; bottom: 33px; }
+  .vr-button { bottom: 33px !important; left: 16px !important; }
 }
 
-canvas {
-  display: block;
+#travel-button { width: 100%; margin-top: 10px; color: #fff; border-color: #ffffff55; padding: 11px; text-align: left; background: #ffffff08; }
+#travel-button:hover { background: #ffffff18; border-color: #aaa; }
+button:disabled { cursor: default; opacity: 0.45; }
+
+.travel-hint { margin-top: 8px; font-size: 9px; line-height: 1.5; color: #888; }
+
+#game-panel { position: fixed; top: 134px; right: 32px; z-index: 3; width: 292px; max-height: calc(100dvh - 255px); overflow-y: auto; background: #070707ed; border: 1px solid #ffffff29; border-radius: 6px; padding: 18px; box-shadow: 0 12px 55px #0007; }
+.game-eyebrow { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .18em; color: #ddd; margin-bottom: 15px; }
+.game-eyebrow span { color: #888; font-size: 8px; letter-spacing: .08em; }
+.game-tabs { display: flex; gap: 6px; }
+.game-tabs button { flex: 1; font-size: 12px; padding: 12px 5px; }
+.game-tabs button[aria-pressed="true"] { color: #fff; border-color: #ff2a2a; background: #ff2a2a13; }
+.turn-heading { display: flex; gap: 9px; align-items: center; margin: 20px 0 10px; }
+.turn-heading h2 { font-size: 17px; font-weight: 500; margin: 0; }
+#move-count { font-size: 9px; color: #aaa; margin-left: auto; }
+#player-marker { width: 11px; height: 11px; background: #1e6cff; border: 1px solid white; border-radius: 50%; }
+#game-message { font-size: 12px; line-height: 1.5; color: #ccc; letter-spacing: 0; min-height: 36px; }
+#game-travel { width: 100%; color: #fff; margin: 12px 0 3px; padding: 12px; border-color: #ffffff60; }
+#game-travel[hidden] { display: none; }
+#move-controls { margin-top: 14px; border-top: 1px solid #ffffff1c; padding-top: 10px; }
+#move-controls summary { font-size: 10px; color: #bbb; cursor: pointer; padding: 5px 0; }
+#board-controls { display: grid; gap: 3px; margin-top: 8px; }
+#board-controls.connectFour { grid-template-columns: repeat(7, 1fr); }
+#board-controls.checkers { grid-template-columns: repeat(8, 1fr); gap: 2px; }
+#board-controls button { min-width: 0; padding: 0; height: 32px; color: #eee; position: relative; }
+#board-controls.checkers button { height: 29px; border: 0; border-radius: 0; background: #eee; }
+#board-controls.checkers button.dark-square { background: #6d1212; }
+#board-controls.checkers button.has-piece::before { content: ''; position: absolute; inset: 5px; background: var(--piece-color); border-radius: 50%; border: 1px solid #fff9; }
+#board-controls.checkers button.king::after { content: 'K'; position: relative; color: #000; font-size: 10px; font-weight: bold; }
+#board-controls button.legal { box-shadow: inset 0 0 0 2px #fff; opacity: 1; }
+#board-controls button.selected { outline: 2px solid white; outline-offset: 1px; z-index: 1; }
+#board-controls button:disabled { opacity: .65; }
+.game-settings { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 4px; }
+.game-settings button { border: 0; padding: 7px 0; font-size: 10px; }
+.game-settings label { font-size: 9px; letter-spacing: 0; display: flex; align-items: center; gap: 4px; }
+.game-settings input { accent-color: #fff; }
+.game-help { margin-top: 10px; font-size: 10px; line-height: 1.6; letter-spacing: 0; color: #bbb; }
+.session-note { font-size: 9px; line-height: 1.5; letter-spacing: 0; margin-top: 10px; color: #888; }
+@media (max-width: 950px) { #view-panel { width: 380px; } .view-heading span { display: none; } }
+@media (max-width: 650px) {
+  #environment-panel { inset: 12px 16px auto; }
+  #seed-form { display: none; }
+  #game-panel { top: 56px; right: 12px; width: 238px; padding: 12px; max-height: calc(100dvh - 190px); }
+  #game-panel .session-note, #game-panel .game-help { display: none; }
+  .game-eyebrow { margin-bottom: 9px; font-size: 9px; }
+  .game-eyebrow span { font-size: 7px; }
+  .game-tabs button { font-size: 11px; padding: 10px 5px; }
+  .turn-heading { margin-top: 13px; }
+  #game-message { font-size: 11px; }
+  #view-panel { bottom: 70px; width: calc(100% - 32px); padding: 7px 10px; }
+  #view-panel .view-heading, #view-panel .view-buttons, #view-panel #travel-button, #view-panel .travel-hint { display: none; }
+  .view-options { margin: 0; }
+  #board-controls.checkers button { height: 25px; }
 }
 
-#seed-panel {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  background: rgb(0 0 0 / 72%);
-  border: 1px solid #333;
-}
-
-#seed-panel label {
-  font-size: 14px;
-}
-
-#seed-input {
-  width: 8rem;
-  padding: 4px 6px;
-  color: #e8e8e8;
-  background: #111;
-  border: 1px solid #555;
-}
-
-#seed-panel button {
-  padding: 4px 8px;
-  color: #111;
-  background: #e8e8e8;
-  border: 0;
-  cursor: pointer;
-}
+#collapse-game-panel { padding: 0; width: 16px; height: 16px; border: 0; font-size: 15px; line-height: 1; margin-top: -3px; color: #bbb; }
+#game-panel.collapsed > :not(.game-eyebrow) { display: none; }
+#game-panel.collapsed .game-eyebrow { margin-bottom: 0; }

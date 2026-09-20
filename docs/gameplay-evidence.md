@@ -1,0 +1,17 @@
+# Gameplay research evidence ledger
+
+**Checked: 20 September 2026.** Sources were opened and relevant passages inspected. URLs below are final inspected pages, not search-result links. Publication dates are listed only where shown by the source. This ledger supports [the design report](gameplay-physics-ux.md).
+
+| Source | Evidence used | Date / scope / limitation |
+|---|---|---|
+| [Hasbro: The Classic Game of Connect 4, A5640](https://instructions.hasbro.com/en-gb/instruction/the-classic-game-of-connect-4) | Product description: dropping discs, four-in-a-row goal, two players, 21 discs per color. | Undated page. Classic PDF download timed out; no claims depend on unseen PDF content. |
+| [Hasbro: Connect Four electronic game instructions](https://www.hasbro.com/common/documents/dad2614d1c4311ddbd0b0800200c9a66/A56241E019B9F36910E1FA0D6031217B.pdf) | Page 2 illustrates three winning directions. | PDF footer shows 30 March 2009 production text. Electronic version; used only for the shared classic victory condition. |
+| [World Checkers/Draughts Federation: Rules of Draughts](https://wcdf.net/rules/rules_of_checkers_english.pdf) | Sections 1.15–1.21 movement/capture/promotion; 1.30–1.32 endings. | PDF metadata names a 2012 document; no publication date inferred. English draughts, not international flying-king draughts. Casual adaptations are identified in the report. |
+| [Meta: Comfort](https://developers.meta.com/horizon/design/comfort/) | Distance interaction, content placement, teleportation and user preferences. | Page updated 17 December 2025. Vendor design guidance, not empirical validation of this scene. |
+| [Meta: Locomotion Best Practices](https://developers.meta.com/horizon/design/locomotion-best-practices/) | Temporal occlusion during rapid movement, stable frame delivery and teleport nodes. | Inspected current page; no publication date asserted. Exact fade timings are our design choice. |
+| [W3C: XR Accessibility User Requirements](https://www.w3.org/TR/xaur/) | Sections 4.2–4.4: motion-independent actions, customization and target size. | User requirements rather than an application conformance test. Does not establish full screen-reader accessibility for the 3D scene. |
+| [MDN: XRSession select event](https://developer.mozilla.org/en-US/docs/Web/API/XRSession/select_event) | Primary action completion and target-ray handling. | Living API documentation. Device support and input behavior require headset checks. |
+| [OpenStax: University Physics Volume 1, §3.5](https://openstax.org/books/university-physics-volume-1/pages/3-5-free-fall) | Constant-acceleration free-fall equation and approximate terrestrial gravity. | Book citation identifies 19 September 2016. Assumes negligible air resistance; provides no VR comfort conclusion. |
+| [Box2D: Simulation](https://box2d.org/documentation/md_simulation.html) | Fixed-step simulation and substep discussion. | Documentation header identifies Box2D 3.1.0. Informative for future rigid bodies; no Box2D dependency was added. |
+
+The report's world dimensions, animation timings, input rules, colors and session behavior come from this repository. They are implementation facts. Targeting and comfort benefits are explicitly marked as design hypotheses. The remaining uncertainty is primarily headset behavior: optical readability, controller precision, stereo frame delivery and comfort have not been measured on physical hardware.

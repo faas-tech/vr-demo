@@ -1,6 +1,42 @@
 # Circular crater: shape and behavior
 
-This is the locked environment for the father-and-daughter Meta Quest WebXR demo. Use it for further stills and for the Three.js generator. The eight images in `reference/style-stills/` are one world, eight cameras.
+## Current game amendment — 20 September 2026
+
+The user has now requested giant Connect Four and checkers mini-games. This
+supersedes the historical no-games, no-text/HUD and court-post restrictions below.
+Both games use the same center field, red/white board architecture and blue/yellow
+pieces. The center post has been removed. Game plinths extend beyond the original
+8 × 5 m island; the ring and player terrace coordinates remain the same.
+Players descend to lower terraces before playing. Desktop and in-headset menus
+select games and manage a shared local two-player session. The current game
+captures are in `reference/game-review/`; rules, physics and UX research are in
+`docs/gameplay-physics-ux.md`. Original stills remain the material/mood reference.
+
+## Current vertical layout — 20 September 2026
+
+The user subsequently requested much greater height and scale, with high cliff
+arrival positions and a jump-down pad to lower playing positions. This update
+supersedes the exact two-ledge count and elevations in the original lock below.
+The circular plan, two opposite player sides, four colors, cube materials and
+isolated central court remain authoritative.
+
+- Crater diameter: approximately 60 m; tall irregular peaks behind each side.
+- Upper arrival terraces: surface Y = 23 m, centered at Z = ±23 m.
+- Lower play terraces: surface Y = -2 m, centered at Z = ±14 m.
+- Court: Y = -9 m, centered on the same axis, 8 × 5 m.
+- Arrival is 32 m above the court. A descent pad moves the player down 25 m
+  to the play terrace, which remains 7 m above the court.
+- The same pad provides a return route. Desktop uses the travel button; VR
+  uses controller aim and trigger. A brief fade masks the relocation.
+- Start anchors sit 0.8 m toward the lip of the upper terrace for court visibility.
+- New cameras `bluePlay` and `yellowPlay` inspect the lower positions.
+
+Current browser captures are in `reference/live-review/index.html`. The eight
+original stills below remain unmodified as the material and mood reference.
+
+## Original locked art direction
+
+This was the locked environment for the father-and-daughter Meta Quest WebXR demo. Use it for further stills and for the Three.js generator. The eight images in `reference/style-stills/` are one world, eight cameras.
 
 The live app on port 5299 is an earlier generator. It is flatter than these stills. Match the stills.
 
